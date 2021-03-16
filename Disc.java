@@ -3,6 +3,7 @@ import javax.swing.JButton;
 
 // AWT Imports
 import java.awt.Dimension;
+import java.awt.Color;
 
 // Other Imports
 
@@ -15,10 +16,11 @@ import java.awt.Dimension;
  */
 public class Disc extends JButton
 {
-    private final int discSize = 64;
+    private final Dimension discSize = new Dimension(64,64);
+    private final Color discColor = new Color(237, 196, 208);
     
     public Disc() {
-        this.setContentAreaFilled(false);
-        this.setPreferredSize(new Dimension(discSize, discSize));
+        this.setBackground(discColor);
+        this.setPreferredSize(discSize);
     }
 }

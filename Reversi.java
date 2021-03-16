@@ -2,18 +2,18 @@
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.border.EmptyBorder;
 import javax.swing.BoxLayout;
+import javax.swing.Box;
 
 // AWT imports
 import java.awt.Container;
 import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.Dimension;
 
 // Other Imports
 
@@ -32,20 +32,24 @@ public class Reversi
     private BorderLayout mainLayout;
     
     // Other Components
-    private JPanel rightSidePanel;
+    private JPanel boardPanel, rightSidePanel;
+    private PlayerPanel player1, player2;
     private BoxLayout rightSideLayout;
-    private JLabel statusBar;
-    private JPanel boardPanel;
-    private Board gameBoard;
-   
-    // Menus and Items
+    private Board gameBoard; 
+    private JButton playGameButton;
+    private JLabel 
+        statusBar,
+        player1Title,
+        player2Title;
     
+    // Menus and Items
     private JMenuBar menuBar;
     private JMenu gameMenu;
-    private JMenuItem newSessionItem;
-    private JMenuItem setBoardSizeItem;
-    private JMenuItem saveGameItem;
-    private JMenuItem loadGameItem;
+    private JMenuItem 
+        newSessionItem, 
+        setBoardSizeItem, 
+        saveGameItem, 
+        loadGameItem;
     
     public Reversi() {
         mainFrame = new JFrame("Game of Reversi");
@@ -55,6 +59,7 @@ public class Reversi
         
         this.createMenuComponents();
         this.createInitialComponents();
+        //this.createEventListener();
         this.initGame();
         
         mainFrame.pack();
@@ -88,7 +93,23 @@ public class Reversi
         rightSideLayout = new BoxLayout(rightSidePanel, BoxLayout.Y_AXIS);
         rightSidePanel.setLayout(rightSideLayout);
         
-        // Create right side content here
+        player1Title = new JLabel("Player 1");
+        player1Title.setFont(player1Title.getFont().deriveFont(18f));
+        player2Title = new JLabel("Player 2");
+        player2Title.setFont(player2Title.getFont().deriveFont(18f));        
+        player1 = new PlayerPanel();
+        player2 = new PlayerPanel();
+        playGameButton = new JButton("Play Game");
+        
+        rightSidePanel.add(player1Title);
+        rightSidePanel.add(Box.createVerticalStrut(10));
+        rightSidePanel.add(player1);
+        rightSidePanel.add(Box.createVerticalStrut(20));
+        rightSidePanel.add(player2Title);
+        rightSidePanel.add(Box.createVerticalStrut(10));
+        rightSidePanel.add(player2);
+        rightSidePanel.add(Box.createVerticalGlue());
+        rightSidePanel.add(playGameButton);
         
         statusBar = new JLabel("Welcome to Reversi!");
         statusBar.setBorder(new EmptyBorder(10,10,10,10));
