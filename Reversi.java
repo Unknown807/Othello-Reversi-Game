@@ -7,6 +7,7 @@ import javax.swing.JTextField;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
@@ -32,7 +33,7 @@ public class Reversi
     private BorderLayout mainLayout;
     
     // Other Components
-    private JPanel boardPanel, rightSidePanel;
+    private JPanel rightSidePanel;
     private PlayerPanel player1, player2;
     private BoxLayout rightSideLayout;
     private Board gameBoard; 
@@ -59,8 +60,8 @@ public class Reversi
         
         this.createMenuComponents();
         this.createInitialComponents();
-        //this.createEventListener();
-        this.initGame();
+        gameBoard.populateBoard();
+        this.createActionListeners();
         
         mainFrame.pack();
         mainFrame.setVisible(true);
@@ -83,19 +84,16 @@ public class Reversi
     }
     
     private void createInitialComponents() {
-        boardPanel = new JPanel();
-        boardPanel.setBorder(new EmptyBorder(10,10,10,10));
         gameBoard = new Board();
-        boardPanel.setLayout(gameBoard);
         
         rightSidePanel = new JPanel();
         rightSidePanel.setBorder(new EmptyBorder(10,10,10,10));
         rightSideLayout = new BoxLayout(rightSidePanel, BoxLayout.Y_AXIS);
         rightSidePanel.setLayout(rightSideLayout);
         
-        player1Title = new JLabel("Player 1");
+        player1Title = new JLabel("Player 1 (White)");
         player1Title.setFont(player1Title.getFont().deriveFont(18f));
-        player2Title = new JLabel("Player 2");
+        player2Title = new JLabel("Player 2 (Black)");
         player2Title.setFont(player2Title.getFont().deriveFont(18f));        
         player1 = new PlayerPanel();
         player2 = new PlayerPanel();
@@ -114,20 +112,41 @@ public class Reversi
         statusBar = new JLabel("Welcome to Reversi!");
         statusBar.setBorder(new EmptyBorder(10,10,10,10));
         
-        mainContainer.add(boardPanel, BorderLayout.CENTER);
+        mainContainer.add(gameBoard, BorderLayout.CENTER);
         mainContainer.add(rightSidePanel, BorderLayout.EAST);
         mainContainer.add(statusBar, BorderLayout.SOUTH);
     }
     
-    private void initGame() {
+    private void createActionListeners() {
         
-        for (int r=0; r<8; r++) {
-            for (int c=0; c<8; c++) {
-                Disc newDisc = new Disc();
-                gameBoard.addDisc(newDisc, r, c);
-                boardPanel.add(newDisc);
+        playGameButton.addActionListener(e -> {
+            boolean validNames = true;
+            String currentPlayer = "1";
+            String playerName = player1.getEnteredName();
+            
+            if (playerName.isBlank() || playerName.equals("Enter Player Name"))
+                validNames = false;
+                
+            playerName = player2.getEnteredName();
+            
+            if (playerName.isBlank() || playerName.equals("Enter Player Name")) {
+                currentPlayer = "2";
+                validNames = false;
             }
-        }
+                
+            if (!validNames) {
+                JOptionPane.showMessageDialog(mainFrame, "Player "+currentPlayer+"'s name can't be left blank",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            player1.finalisePlayerName();
+            player2.finalisePlayerName();
+            playGameButton.setVisible(false);
+            statusBar.setText(player1Title.getText()+"'s Turn");
+            gameBoard.startGame();
+        });
         
     }
+    
 }
