@@ -120,26 +120,35 @@ public class Board extends JPanel
         return false;
     }
     
+    public boolean checkLeftDiagonal(String myColor, int r, int c) {
+        // Check diagonal going to top left
+        if ( checkDirection(myColor, r-1, c-1, -1, -1) != null ) return true;
+        // Check diagonal going to bottom right
+        if ( checkDirection(myColor, r+1, c+1, 1, 1) != null ) return true;
+        
+        return false;
+    }
+    
+    public boolean checkRightDiagonal(String myColor, int r, int c) {
+        // Check diagonal going to top right
+        if ( checkDirection(myColor, r-1, c+1, -1, 1) != null ) return true;
+        // Check diagonal going to bottom left
+        if ( checkDirection(myColor, r+1, c-1, 1, -1) != null ) return true;
+        
+        return false;
+    }    
+    
     public boolean checkLegalMove(String myColor, int r, int c) {
         // Check verticals
         if (checkVerticals(myColor, r, c)) return true;
         // Check horizontals
         if (checkHorizontals(myColor, r, c)) return true;
         // Check left diagonal
-        
+        if (checkLeftDiagonal(myColor, r, c)) return true;
         // Check right diagonal
+        if (checkRightDiagonal(myColor, r, c)) return true;
         
         return false;
-        
-        // At each step of each check see if:
-        // 1) go to the end of the direction (x, y, diagonal), if along the way
-        //    you encounter an empty disc, then you KNOW that that whole path has no
-        //    legal moves.
-        // 2) If you encounter your colored disc, and everything so far has been your
-        //    opponents disc (no empties), then that path is valid and thus the original
-        //    pos is a legal move.
-        
-        // Then mark the current disc's legalmove to true, this will change the color of it
     }
     
     public void checkLegalMoves(boolean turn) {

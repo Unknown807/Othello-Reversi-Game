@@ -24,6 +24,7 @@ public class Disc extends JButton implements ActionListener
 {
     
     private Board controller;
+    
     private final Dimension DISCSIZE = new Dimension(64,64);
     private final Color DISCBGCOLOR = new Color(237, 196, 208);
     private final Icon WHITEICON = new DiscIcon(Color.WHITE);
@@ -32,6 +33,7 @@ public class Disc extends JButton implements ActionListener
     // Indicates whether a player can place a 'disc' on this disc on the layout
     private boolean legalMove = false;
     
+    // empty, black or white
     private String type = "empty";
     
     public Disc(Board controller) {
