@@ -27,6 +27,9 @@ import java.awt.BorderLayout;
 public class Reversi
 {
     
+    // true is player 1 (Black), false is for player 2 (White). Black starts first
+    private boolean turn = true;
+    
     // Main Layout Components
     private JFrame mainFrame;
     private Container mainContainer;
@@ -60,7 +63,7 @@ public class Reversi
         
         this.createMenuComponents();
         this.createInitialComponents();
-        gameBoard.populateBoard();
+        gameBoard.setBoardSize();
         this.createActionListeners();
         
         mainFrame.pack();
@@ -84,7 +87,7 @@ public class Reversi
     }
     
     private void createInitialComponents() {
-        gameBoard = new Board();
+        gameBoard = new Board(this);
         
         rightSidePanel = new JPanel();
         rightSidePanel.setBorder(new EmptyBorder(10,10,10,10));
@@ -143,8 +146,9 @@ public class Reversi
             player1.finalisePlayerName();
             player2.finalisePlayerName();
             playGameButton.setVisible(false);
-            statusBar.setText(player1Title.getText()+"'s Turn");
+            statusBar.setText(player2Title.getText()+"'s Turn");
             gameBoard.startGame();
+            gameBoard.checkLegalMoves(turn);
         });
         
     }

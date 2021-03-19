@@ -12,7 +12,7 @@ import java.awt.Dimension;
 // Other Imports
 
 /**
- * The PlayerPanel class for holding the UI components that make up a player in the game
+ * The PlayerPanel class for holding the components that make up a player in the game
  *
  * @author Milovan Gveric
  * @version 16/03/2021

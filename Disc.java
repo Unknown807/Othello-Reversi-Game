@@ -22,14 +22,20 @@ import java.awt.event.ActionEvent;
  */
 public class Disc extends JButton implements ActionListener
 {
+    
+    private Board controller;
     private final Dimension DISCSIZE = new Dimension(64,64);
     private final Color DISCBGCOLOR = new Color(237, 196, 208);
     private final Icon WHITEICON = new DiscIcon(Color.WHITE);
     private final Icon BLACKICON = new DiscIcon(Color.BLACK);
     
+    // Indicates whether a player can place a 'disc' on this disc on the layout
     private boolean legalMove = false;
     
-    public Disc() {
+    private String type = "empty";
+    
+    public Disc(Board controller) {
+        this.controller = controller;
         this.setBackground(DISCBGCOLOR);
         this.setFocusPainted(false);
         this.addActionListener(this);
@@ -54,10 +60,28 @@ public class Disc extends JButton implements ActionListener
     
     public void makeBlack() {
         this.setIcon(BLACKICON);
+        type = "black";
     }
     
     public void makeWhite() {
         this.setIcon(WHITEICON);
+        type = "white";
+    }
+    
+    public void makeLegal() {
+        legalMove = true;
+    }
+    
+    public void makeIllegal() {
+        legalMove = false;
+    }
+    
+    public String getType() {
+        return type;
+    }
+    
+    public boolean isEmpty() {
+        return type.equals("empty");
     }
     
     
