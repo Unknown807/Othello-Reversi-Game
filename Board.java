@@ -141,6 +141,7 @@ public class Board extends JPanel
     }
     
     public void checkAllLegalMoves() {
+        boolean noLegalMoves = true;
         boolean turn = controller.getTurn();
         currentDiscColor = (turn) ? "black" : "white";
         
@@ -151,10 +152,15 @@ public class Board extends JPanel
                 currentDisc = boardDiscs[r][c];
                 if (currentDisc.isEmpty()) {
                     if (getLegalMoves(r, c) != null) {
+                        noLegalMoves = false;
                         currentDisc.makeLegal();
                     }
                 }
             }
+        }
+        
+        if (noLegalMoves) {
+            controller.passTurn();
         }
     }
     
@@ -164,7 +170,6 @@ public class Board extends JPanel
     
     public void playMove(Disc selectedDisc) {
         boolean turn = controller.getTurn();
-        currentDiscColor = (turn) ? "black" : "white";
         
         selectedDisc.makeIllegal();
         setStatusBar("It's "+((turn) ? "White" : "Black")+"'s Turn", Color.BLACK);
@@ -198,7 +203,17 @@ public class Board extends JPanel
         }
         
         resetLegalMoves();
-        controller.nextTurn(getTotalDiscs());
+        controller.nextTurn();
+    }
+    
+    public int getBlackTotal() {
+        currentDiscColor = "black";
+        return getTotalDiscs();
+    }
+    
+    public int getWhiteTotal() {
+        currentDiscColor = "white";
+        return getTotalDiscs();
     }
     
     private int getTotalDiscs() {

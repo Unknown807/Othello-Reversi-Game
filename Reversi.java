@@ -31,6 +31,9 @@ public class Reversi
     // true is player 1 (Black), false is for player 2 (White). Black starts first
     private boolean turn = true;
     
+    // 0 (able to playmoves), 1 (one player had to pass), 2 (both players passed, end game)
+    private int passedTurns = 0;
+    
     // Main Layout Components
     private JFrame mainFrame;
     private Container mainContainer;
@@ -151,18 +154,35 @@ public class Reversi
             player1.setDiscTotal(2);
             player2.setDiscTotal(2);
             playGameButton.setVisible(false);
-            setStatusBar("It's "+player2Title.getText()+"'s Turn", Color.BLACK);
+            setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
             gameBoard.startGame();
             gameBoard.checkAllLegalMoves();
         });
         
     }
     
-    public void nextTurn(int capturedCount) {
-        PlayerPanel currentPlayer = turn ? player2 : player1;
-        currentPlayer.setDiscTotal(capturedCount);
+    public void endGame() {
+        System.out.println("No player could move, who won?");
+    }
+    
+    public void nextTurn() {
+        passedTurns = 0;
+        player1.setDiscTotal(gameBoard.getWhiteTotal());
+        player2.setDiscTotal(gameBoard.getBlackTotal());
         turn = !turn;
         gameBoard.checkAllLegalMoves();
+    }
+    
+    public void passTurn() {
+        setStatusBar(((turn) ? "Black" : "White")+" passed", Color.RED);
+        
+        passedTurns++;
+        if (passedTurns == 2) {
+            endGame();
+        } else {
+            turn = !turn;
+            gameBoard.checkAllLegalMoves();
+        }
     }
     
     public void setStatusBar(String text, Color fg) {
