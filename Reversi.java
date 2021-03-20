@@ -15,6 +15,7 @@ import javax.swing.Box;
 // AWT imports
 import java.awt.Container;
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 // Other Imports
 
@@ -122,6 +123,8 @@ public class Reversi
     
     private void createActionListeners() {
         
+        // Adds simple checks to make sure either player's name isn't the default
+        // string or blank
         playGameButton.addActionListener(e -> {
             boolean validNames = true;
             String currentPlayer = "1";
@@ -145,12 +148,30 @@ public class Reversi
             
             player1.finalisePlayerName();
             player2.finalisePlayerName();
+            player1.setDiscTotal(2);
+            player2.setDiscTotal(2);
             playGameButton.setVisible(false);
-            statusBar.setText(player2Title.getText()+"'s Turn");
+            setStatusBar("It's "+player2Title.getText()+"'s Turn", Color.BLACK);
             gameBoard.startGame();
-            gameBoard.checkLegalMoves(turn);
+            gameBoard.checkAllLegalMoves();
         });
         
+    }
+    
+    public void nextTurn(int capturedCount) {
+        PlayerPanel currentPlayer = turn ? player2 : player1;
+        currentPlayer.setDiscTotal(capturedCount);
+        turn = !turn;
+        gameBoard.checkAllLegalMoves();
+    }
+    
+    public void setStatusBar(String text, Color fg) {
+        statusBar.setText(text);
+        statusBar.setForeground(fg);
+    }
+    
+    public boolean getTurn() {
+        return turn;
     }
     
 }

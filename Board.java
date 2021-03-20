@@ -4,6 +4,7 @@ import javax.swing.border.EmptyBorder;
 
 // AWT Imports
 import java.awt.GridLayout;
+import java.awt.Color;
 
 // Other Imports
 import java.util.ArrayList;
@@ -18,9 +19,12 @@ import java.util.ArrayList;
 public class Board extends JPanel
 {
     private Reversi controller;
+    
     private int boardSize = 8;
     private Disc[][] boardDiscs;
     private GridLayout layout;
+    
+    private String currentDiscColor;
     
     public Board(Reversi controller) {
         this.controller = controller;
@@ -70,22 +74,17 @@ public class Board extends JPanel
         
     }
     
-    public boolean checkBoundary(int r, int c) {
-        return ( (r>=0 && r<boardSize) && (c>=0 && c<boardSize) );
-    }
-    
-    public ArrayList<Disc> checkDirection(String myColor, int r, int c, int rInc, int cInc) {
-        ArrayList<Disc> legalDiscs = new ArrayList<>(boardSize-1-r);
+    public ArrayList<Disc> checkDirection(int r, int c, int rInc, int cInc) {
+        ArrayList<Disc> legalDiscs = new ArrayList<>();
         
-        int i = r;
-        while (checkBoundary(i, c)) {
-            Disc tempDisc = boardDiscs[i][c];
+        while ( (r>=0 && r<boardSize) && (c>=0 && c<boardSize) ) {
+            Disc tempDisc = boardDiscs[r][c];
             
             if (tempDisc.isEmpty()) {
                 return null;
             }
             
-            if (tempDisc.getType().equals(myColor)) {
+            if (tempDisc.getType().equals(currentDiscColor)) {
                 if (legalDiscs.size() == 0) {
                     return null;
                 } else {
@@ -95,66 +94,55 @@ public class Board extends JPanel
             
             legalDiscs.add(tempDisc);
             
-            i += rInc;
+            r += rInc;
             c += cInc;
         }
         
         return null;
-    }
+    }   
     
-    public boolean checkVerticals(String myColor, int r, int c) {
+    public ArrayList<ArrayList<Disc>> getLegalMoves(int r, int c) {
+        ArrayList<ArrayList<Disc>> capturedDiscs = new ArrayList<>();
+        ArrayList<Disc> tempList;
+        
         // Check vertical going up
-        if ( checkDirection(myColor, r-1, c, -1, 0) != null ) return true;
+        tempList = checkDirection(r-1, c, -1, 0);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         //Check vertical going down
-        if ( checkDirection(myColor, r+1, c, 1, 0) != null ) return true;
+        tempList = checkDirection(r+1, c, 1, 0);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         
-        return false;
-    }
-    
-    public boolean checkHorizontals(String myColor, int r, int c) {
         // Check horizontal going left
-        if ( checkDirection(myColor, r, c-1, 0, -1) != null ) return true;
+        tempList = checkDirection(r, c-1, 0, -1);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         // Check horizontal going right
-        if ( checkDirection(myColor, r, c+1, 0, 1) != null ) return true;
+        tempList = checkDirection(r, c+1, 0, 1);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         
-        return false;
-    }
-    
-    public boolean checkLeftDiagonal(String myColor, int r, int c) {
         // Check diagonal going to top left
-        if ( checkDirection(myColor, r-1, c-1, -1, -1) != null ) return true;
+        tempList = checkDirection(r-1, c-1, -1, -1);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         // Check diagonal going to bottom right
-        if ( checkDirection(myColor, r+1, c+1, 1, 1) != null ) return true;
+        tempList = checkDirection(r+1, c+1, 1, 1);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         
-        return false;
-    }
-    
-    public boolean checkRightDiagonal(String myColor, int r, int c) {
         // Check diagonal going to top right
-        if ( checkDirection(myColor, r-1, c+1, -1, 1) != null ) return true;
+        tempList = checkDirection(r-1, c+1, -1, 1);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         // Check diagonal going to bottom left
-        if ( checkDirection(myColor, r+1, c-1, 1, -1) != null ) return true;
+        tempList = checkDirection(r+1, c-1, 1, -1);
+        if ( tempList != null ) capturedDiscs.add(tempList);
         
-        return false;
-    }    
-    
-    public boolean checkLegalMove(String myColor, int r, int c) {
-        // Check verticals
-        if (checkVerticals(myColor, r, c)) return true;
-        // Check horizontals
-        if (checkHorizontals(myColor, r, c)) return true;
-        // Check left diagonal
-        if (checkLeftDiagonal(myColor, r, c)) return true;
-        // Check right diagonal
-        if (checkRightDiagonal(myColor, r, c)) return true;
-        
-        return false;
+        // If no legal directions of capture have been added, then return null
+        if (capturedDiscs.size() == 0)
+            return null;
+
+        return capturedDiscs;
     }
     
-    public void checkLegalMoves(boolean turn) {
-        // What is the opponents color in order to find the legal positions against them
-        String myColor = (turn) ? "black" : "white";
-        String oppColor = (turn) ? "white" : "black";
+    public void checkAllLegalMoves() {
+        boolean turn = controller.getTurn();
+        currentDiscColor = (turn) ? "black" : "white";
         
         // Go through each disc on the board to find the legal positions
         Disc currentDisc;
@@ -162,10 +150,78 @@ public class Board extends JPanel
             for (int c=0; c<boardSize; c++) {
                 currentDisc = boardDiscs[r][c];
                 if (currentDisc.isEmpty()) {
-                    if (checkLegalMove(myColor, r, c)) {
-                        boardDiscs[r][c].makeLegal();
+                    if (getLegalMoves(r, c) != null) {
+                        currentDisc.makeLegal();
                     }
                 }
+            }
+        }
+    }
+    
+    public void setStatusBar(String text, Color fg) {
+        controller.setStatusBar(text, fg);
+    }
+    
+    public void playMove(Disc selectedDisc) {
+        boolean turn = controller.getTurn();
+        currentDiscColor = (turn) ? "black" : "white";
+        
+        selectedDisc.makeIllegal();
+        setStatusBar("It's "+((turn) ? "White" : "Black")+"'s Turn", Color.BLACK);
+        
+        ArrayList<ArrayList<Disc>> capturedDiscs;
+        int r = 0;
+        int c = 0;
+        
+        for (int i=0; i<boardSize; i++) {
+            for (int j=0; j<boardSize; j++) {
+                if (selectedDisc.equals(boardDiscs[i][j])) {
+                    r = i;
+                    c = j;
+                }
+            }
+        }
+        
+        // find all discs to be captured
+
+        capturedDiscs = getLegalMoves(r, c);
+        capturedDiscs.get(0).add(selectedDisc);
+        
+        for (ArrayList<Disc> discs: capturedDiscs) {
+            for (Disc disc: discs) {
+                if (turn) {
+                    disc.makeBlack();
+                } else {
+                    disc.makeWhite();
+                }
+            }
+        }
+        
+        resetLegalMoves();
+        controller.nextTurn(getTotalDiscs());
+    }
+    
+    private int getTotalDiscs() {
+        int total = 0;
+        
+        for (int r=0; r<boardSize; r++) {
+            for (int c=0; c<boardSize; c++) {
+                if (boardDiscs[r][c].getType().equals(currentDiscColor))
+                    total++;
+            }
+        }
+        
+        return total;
+    }
+    
+    private void resetLegalMoves() {
+        for (int r=0; r<boardSize; r++) {
+            for (int c=0; c<boardSize; c++) {
+                Disc currentDisc = boardDiscs[r][c];
+                if (currentDisc.getLegalMove()) {
+                    boardDiscs[r][c].makeIllegal();
+                }
+                
             }
         }
     }

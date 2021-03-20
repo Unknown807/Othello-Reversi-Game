@@ -76,14 +76,6 @@ public class PlayerPanel extends JPanel
         playerDiscs.setText("Discs Total: "+discTotal);
     }
     
-    public void incScore() {
-        this.setScore(score+1);
-    }
-    
-    public void incDiscTotal() {
-        this.setDiscTotal(discTotal+1);
-    }
-    
     public String getEnteredName() {
         return playerNameField.getText();
     }

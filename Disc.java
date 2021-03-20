@@ -57,7 +57,11 @@ public class Disc extends JButton implements ActionListener
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("Button Clicked");
+        if (legalMove) {
+            controller.playMove(this);
+        } else {
+            controller.setStatusBar("Illegal Move", Color.RED);
+        }
     }
     
     public void makeBlack() {
@@ -80,6 +84,10 @@ public class Disc extends JButton implements ActionListener
     
     public String getType() {
         return type;
+    }
+    
+    public boolean getLegalMove() {
+        return legalMove;
     }
     
     public boolean isEmpty() {
