@@ -46,13 +46,13 @@ public class Board extends JPanel
         for (int r=0; r<boardSize; r++) {
             for (int c=0; c<boardSize; c++) {
                 Disc newDisc = new Disc(this);
-                this.addDisc(newDisc, r, c);
+                addDisc(newDisc, r, c);
             }
         }
     }
     
     public void setBoardSize() {
-        this.populateBoard();
+        populateBoard();
     }
     
     public void setBoardSize(int size) {
@@ -61,7 +61,7 @@ public class Board extends JPanel
         this.layout.setRows(size);
         this.layout.setColumns(size);
         // run mainFrame.validate();
-        this.populateBoard();
+        populateBoard();
     }
     
     public void startGame() {
@@ -74,7 +74,12 @@ public class Board extends JPanel
         
     }
     
-    public ArrayList<Disc> checkDirection(int r, int c, int rInc, int cInc) {
+    public void newGame() {
+        resetLegalMoves();
+        resetBoard();
+    }
+    
+    private ArrayList<Disc> checkDirection(int r, int c, int rInc, int cInc) {
         ArrayList<Disc> legalDiscs = new ArrayList<>();
         
         while ( (r>=0 && r<boardSize) && (c>=0 && c<boardSize) ) {
@@ -101,7 +106,7 @@ public class Board extends JPanel
         return null;
     }   
     
-    public ArrayList<ArrayList<Disc>> getLegalMoves(int r, int c) {
+    private ArrayList<ArrayList<Disc>> getLegalMoves(int r, int c) {
         ArrayList<ArrayList<Disc>> capturedDiscs = new ArrayList<>();
         ArrayList<Disc> tempList;
         
@@ -227,6 +232,14 @@ public class Board extends JPanel
         }
         
         return total;
+    }
+    
+    private void resetBoard() {
+        for (int r=0; r<boardSize; r++) {
+            for (int c=0; c<boardSize; c++) {
+                boardDiscs[r][c].makeEmpty();
+            }
+        }
     }
     
     private void resetLegalMoves() {

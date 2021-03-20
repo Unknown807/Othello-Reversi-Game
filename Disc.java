@@ -74,6 +74,11 @@ public class Disc extends JButton implements ActionListener
         type = "white";
     }
     
+    public void makeEmpty() {
+        this.setIcon(null);
+        type = "empty";
+    }
+    
     public void makeLegal() {
         legalMove = true;
     }

@@ -65,10 +65,10 @@ public class Reversi
         mainLayout = new BorderLayout(10, 10);
         mainContainer.setLayout(mainLayout);
         
-        this.createMenuComponents();
-        this.createInitialComponents();
+        createMenuComponents();
+        createInitialComponents();
         gameBoard.setBoardSize();
-        this.createActionListeners();
+        createActionListeners();
         
         mainFrame.pack();
         mainFrame.setVisible(true);
@@ -161,8 +161,31 @@ public class Reversi
         
     }
     
-    public void endGame() {
-        System.out.println("No player could move, who won?");
+    private void endGame() {
+        setStatusBar("Neither player can move", Color.RED);
+        String msg = "";
+        int totalB = player2.getDiscTotal();
+        int totalW = player1.getDiscTotal();
+        
+        if (totalB > totalW) {
+            msg = "Black wins this game!";
+            player2.incScore();
+        } else if (totalW > totalB) {
+            msg = "White wins this game!";
+            player1.incScore();
+        } else {
+            msg = "Both players have the same amount of discs, tie!";
+            player1.incScore();
+            player2.incScore();
+        }
+        
+        JOptionPane.showMessageDialog(mainFrame, msg);
+        
+        turn = true;
+        player1.setDiscTotal(0);
+        player2.setDiscTotal(0);
+        gameBoard.newGame();
+        playGameButton.setVisible(true);
     }
     
     public void nextTurn() {
@@ -174,7 +197,10 @@ public class Reversi
     }
     
     public void passTurn() {
-        setStatusBar(((turn) ? "Black" : "White")+" passed", Color.RED);
+        String currentPlayer = (turn) ? "Black" : "White";
+        setStatusBar(currentPlayer+" passed", Color.RED);
+        JOptionPane.showMessageDialog(mainFrame, "There are no moves for "+currentPlayer+
+            ", so you have to pass");
         
         passedTurns++;
         if (passedTurns == 2) {

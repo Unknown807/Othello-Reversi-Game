@@ -60,10 +60,14 @@ public class PlayerPanel extends JPanel
     }
     
     public void finalisePlayerName() {   
-        name = this.getEnteredName();
+        name = getEnteredName();
         playerName.setText("Name: "+name);
         playerName.setVisible(true);
         playerNameField.setVisible(false);
+    }
+    
+    public void incScore() {
+        setScore(score+1);
     }
     
     public void setScore(int score) {
