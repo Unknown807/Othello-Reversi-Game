@@ -44,11 +44,9 @@ public class Reversi
     private PlayerPanel player1, player2;
     private BoxLayout rightSideLayout;
     private Board gameBoard; 
-    private JButton playGameButton;
-    private JLabel 
-        statusBar,
-        player1Title,
-        player2Title;
+    
+    private JButton playGameButton, legalMovesToggle;
+    private JLabel statusBar;
     
     // Menus and Items
     private JMenuBar menuBar;
@@ -66,9 +64,9 @@ public class Reversi
         mainContainer.setLayout(mainLayout);
         
         createMenuComponents();
-        createInitialComponents();
+        createComponents();
         gameBoard.setBoardSize();
-        createActionListeners();
+        createButtonListeners();
         
         mainFrame.pack();
         mainFrame.setVisible(true);
@@ -90,31 +88,27 @@ public class Reversi
         gameMenu.add(loadGameItem);
     }
     
-    private void createInitialComponents() {
+    private void createComponents() {
         gameBoard = new Board(this);
-        
+
         rightSidePanel = new JPanel();
         rightSidePanel.setBorder(new EmptyBorder(10,10,10,10));
         rightSideLayout = new BoxLayout(rightSidePanel, BoxLayout.Y_AXIS);
         rightSidePanel.setLayout(rightSideLayout);
-        
-        player1Title = new JLabel("Player 1 (White)");
-        player1Title.setFont(player1Title.getFont().deriveFont(18f));
-        player2Title = new JLabel("Player 2 (Black)");
-        player2Title.setFont(player2Title.getFont().deriveFont(18f));        
-        player1 = new PlayerPanel();
-        player2 = new PlayerPanel();
+              
+        player1 = new PlayerPanel("White");
+        player2 = new PlayerPanel("Black");
         playGameButton = new JButton("Play Game");
+        legalMovesToggle = new JButton("Hide Moves");
         
-        rightSidePanel.add(player1Title);
         rightSidePanel.add(Box.createVerticalStrut(10));
         rightSidePanel.add(player1);
-        rightSidePanel.add(Box.createVerticalStrut(20));
-        rightSidePanel.add(player2Title);
         rightSidePanel.add(Box.createVerticalStrut(10));
         rightSidePanel.add(player2);
         rightSidePanel.add(Box.createVerticalGlue());
         rightSidePanel.add(playGameButton);
+        rightSidePanel.add(Box.createVerticalStrut(10));
+        rightSidePanel.add(legalMovesToggle);
         
         statusBar = new JLabel("Welcome to Reversi!");
         statusBar.setBorder(new EmptyBorder(10,10,10,10));
@@ -124,7 +118,7 @@ public class Reversi
         mainContainer.add(statusBar, BorderLayout.SOUTH);
     }
     
-    private void createActionListeners() {
+    private void createButtonListeners() {
         
         // Adds simple checks to make sure either player's name isn't the default
         // string or blank
@@ -154,11 +148,17 @@ public class Reversi
             player1.setDiscTotal(2);
             player2.setDiscTotal(2);
             playGameButton.setVisible(false);
+            legalMovesToggle.setVisible(false);
             setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
             gameBoard.startGame();
             gameBoard.checkAllLegalMoves();
         });
         
+        legalMovesToggle.addActionListener(e -> {
+            gameBoard.toggleLegalMoves();
+            String newText = legalMovesToggle.getText().equals("Hide Moves") ? "Show Moves" : "Hide Moves";
+            legalMovesToggle.setText(newText);
+        });
     }
     
     private void endGame() {
@@ -186,6 +186,7 @@ public class Reversi
         player2.setDiscTotal(0);
         gameBoard.newGame();
         playGameButton.setVisible(true);
+        legalMovesToggle.setVisible(true);        
     }
     
     public void nextTurn() {

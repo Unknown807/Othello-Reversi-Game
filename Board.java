@@ -106,37 +106,37 @@ public class Board extends JPanel
         return null;
     }   
     
-    private ArrayList<ArrayList<Disc>> getLegalMoves(int r, int c) {
-        ArrayList<ArrayList<Disc>> capturedDiscs = new ArrayList<>();
+    private ArrayList<Disc> getLegalMoves(int r, int c) {
+        ArrayList<Disc> capturedDiscs = new ArrayList<>();
         ArrayList<Disc> tempList;
         
         // Check vertical going up
         tempList = checkDirection(r-1, c, -1, 0);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         //Check vertical going down
         tempList = checkDirection(r+1, c, 1, 0);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         
         // Check horizontal going left
         tempList = checkDirection(r, c-1, 0, -1);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         // Check horizontal going right
         tempList = checkDirection(r, c+1, 0, 1);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         
         // Check diagonal going to top left
         tempList = checkDirection(r-1, c-1, -1, -1);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         // Check diagonal going to bottom right
         tempList = checkDirection(r+1, c+1, 1, 1);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         
         // Check diagonal going to top right
         tempList = checkDirection(r-1, c+1, -1, 1);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         // Check diagonal going to bottom left
         tempList = checkDirection(r+1, c-1, 1, -1);
-        if ( tempList != null ) capturedDiscs.add(tempList);
+        if ( tempList != null ) capturedDiscs.addAll(tempList);
         
         // If no legal directions of capture have been added, then return null
         if (capturedDiscs.size() == 0)
@@ -179,7 +179,7 @@ public class Board extends JPanel
         selectedDisc.makeIllegal();
         setStatusBar("It's "+((turn) ? "White" : "Black")+"'s Turn", Color.BLACK);
         
-        ArrayList<ArrayList<Disc>> capturedDiscs;
+        ArrayList<Disc> capturedDiscs;
         int r = 0;
         int c = 0;
         
@@ -195,15 +195,13 @@ public class Board extends JPanel
         // find all discs to be captured
 
         capturedDiscs = getLegalMoves(r, c);
-        capturedDiscs.get(0).add(selectedDisc);
+        capturedDiscs.add(selectedDisc);
         
-        for (ArrayList<Disc> discs: capturedDiscs) {
-            for (Disc disc: discs) {
-                if (turn) {
-                    disc.makeBlack();
-                } else {
-                    disc.makeWhite();
-                }
+        for (Disc disc: capturedDiscs) {
+            if (turn) {
+                disc.makeBlack();
+            } else {
+                disc.makeWhite();
             }
         }
         
@@ -232,6 +230,14 @@ public class Board extends JPanel
         }
         
         return total;
+    }
+    
+    public void toggleLegalMoves() {
+        for (int r=0; r<boardSize; r++) {
+            for (int c=0; c<boardSize; c++) {
+                boardDiscs[r][c].toggleLegalMoves();
+            }
+        }
     }
     
     private void resetBoard() {

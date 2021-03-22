@@ -33,6 +33,9 @@ public class Disc extends JButton implements ActionListener
     // Indicates whether a player can place a 'disc' on this disc on the layout
     private boolean legalMove = false;
     
+    // Indicates whether legal moves should be shown to the players
+    private boolean showLegalMoves = true;
+    
     // empty, black or white
     private String type = "empty";
     
@@ -46,9 +49,9 @@ public class Disc extends JButton implements ActionListener
     
     @Override
     public void paintComponent(Graphics g) {
-        if (!this.isSelected() && !legalMove) {
+        if (!legalMove) {
             this.setBorder(new EmptyBorder(0,0,0,0));
-        } else if (!this.isSelected() && legalMove) {
+        } else if (legalMove && showLegalMoves) {
             this.setBorder(new LineBorder(Color.BLUE, 2));
         }
         
@@ -79,6 +82,10 @@ public class Disc extends JButton implements ActionListener
         type = "empty";
     }
     
+    public void toggleLegalMoves() {
+        showLegalMoves = !showLegalMoves;
+    }
+    
     public void makeLegal() {
         legalMove = true;
     }
@@ -98,6 +105,5 @@ public class Disc extends JButton implements ActionListener
     public boolean isEmpty() {
         return type.equals("empty");
     }
-    
     
 }
