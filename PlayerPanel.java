@@ -74,6 +74,13 @@ public class PlayerPanel extends JPanel
         playerNameField.setVisible(false);
     }
     
+    public void showPlayerNameField() {
+        playerNameField.setText("Enter Player Name");
+        
+        playerNameField.setVisible(true);
+        playerName.setVisible(false);
+    }
+    
     public void incScore() {
         setScore(player.getScore()+1);
     }

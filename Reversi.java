@@ -66,7 +66,7 @@ public class Reversi
         createMenuComponents();
         createComponents();
         gameBoard.setBoardSize();
-        createButtonListeners();
+        createActionListeners();
         
         mainFrame.pack();
         mainFrame.setVisible(true);
@@ -106,9 +106,9 @@ public class Reversi
         rightSidePanel.add(Box.createVerticalStrut(10));
         rightSidePanel.add(player2);
         rightSidePanel.add(Box.createVerticalGlue());
-        rightSidePanel.add(playGameButton);
-        rightSidePanel.add(Box.createVerticalStrut(10));
         rightSidePanel.add(legalMovesToggle);
+        rightSidePanel.add(Box.createVerticalStrut(10));
+        rightSidePanel.add(playGameButton);
         
         statusBar = new JLabel("Welcome to Reversi!");
         statusBar.setBorder(new EmptyBorder(10,10,10,10));
@@ -118,47 +118,80 @@ public class Reversi
         mainContainer.add(statusBar, BorderLayout.SOUTH);
     }
     
-    private void createButtonListeners() {
+    private void createActionListeners() {
+        playGameButton.addActionListener(e -> playGame());
+        legalMovesToggle.addActionListener(e -> toggleLegalMoves());
+        newSessionItem.addActionListener(e -> startNewSession());
+        setBoardSizeItem.addActionListener(e -> setBoardSize());
+        saveGameItem.addActionListener(e -> saveGame());
+        loadGameItem.addActionListener(e -> loadGame());
+    }
+    
+    private void startNewSession() {
+        int resetDialog = JOptionPane.showConfirmDialog(mainFrame,
+            "Do you want to start a new session?",
+            "Board Reset",
+            JOptionPane.YES_NO_OPTION);
+            
+        if (resetDialog != JOptionPane.YES_OPTION) return;
         
+        newGame();
+        player1.setScore(0);
+        player2.setScore(0);
+        
+        setStatusBar("New Session Started", Color.BLACK);
+        
+        player1.showPlayerNameField();
+        player2.showPlayerNameField();
+    }
+    
+    private void setBoardSize() {
+    }
+    
+    private void saveGame() {
+    }
+    
+    private void loadGame() {
+    }
+    
+    private void playGame() {
         // Adds simple checks to make sure either player's name isn't the default
         // string or blank
-        playGameButton.addActionListener(e -> {
-            boolean validNames = true;
-            String currentPlayer = "1";
-            String playerName = player1.getEnteredName();
-            
-            if (playerName.isBlank() || playerName.equals("Enter Player Name"))
-                validNames = false;
-                
-            playerName = player2.getEnteredName();
-            
-            if (playerName.isBlank() || playerName.equals("Enter Player Name")) {
-                currentPlayer = "2";
-                validNames = false;
-            }
-                
-            if (!validNames) {
-                JOptionPane.showMessageDialog(mainFrame, "Player "+currentPlayer+"'s name can't be left blank",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            player1.finalisePlayerName();
-            player2.finalisePlayerName();
-            player1.setDiscTotal(2);
-            player2.setDiscTotal(2);
-            playGameButton.setVisible(false);
-            legalMovesToggle.setVisible(false);
-            setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
-            gameBoard.startGame();
-            gameBoard.checkAllLegalMoves();
-        });
+        boolean validNames = true;
+        String currentPlayer = "1";
+        String playerName = player1.getEnteredName();
         
-        legalMovesToggle.addActionListener(e -> {
-            gameBoard.toggleLegalMoves();
-            String newText = legalMovesToggle.getText().equals("Hide Moves") ? "Show Moves" : "Hide Moves";
-            legalMovesToggle.setText(newText);
-        });
+        if (playerName.isBlank() || playerName.equals("Enter Player Name"))
+            validNames = false;
+            
+        playerName = player2.getEnteredName();
+        
+        if (playerName.isBlank() || playerName.equals("Enter Player Name")) {
+            currentPlayer = "2";
+            validNames = false;
+        }
+            
+        if (!validNames) {
+            JOptionPane.showMessageDialog(mainFrame, "Player "+currentPlayer+"'s name can't be left blank",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        player1.finalisePlayerName();
+        player2.finalisePlayerName();
+        player1.setDiscTotal(2);
+        player2.setDiscTotal(2);
+        playGameButton.setVisible(false);
+        legalMovesToggle.setVisible(false);
+        setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
+        gameBoard.startGame();
+        gameBoard.checkAllLegalMoves();
+    }
+    
+    public void toggleLegalMoves() {
+        gameBoard.toggleLegalMoves();
+        String newText = legalMovesToggle.getText().equals("Hide Moves") ? "Show Moves" : "Hide Moves";
+        legalMovesToggle.setText(newText);        
     }
     
     private void endGame() {
@@ -181,12 +214,17 @@ public class Reversi
         
         JOptionPane.showMessageDialog(mainFrame, msg);
         
+        newGame();
+        setStatusBar("New Game Started", Color.BLACK);
+    }
+    
+    private void newGame() {
         turn = true;
         player1.setDiscTotal(0);
         player2.setDiscTotal(0);
         gameBoard.newGame();
         playGameButton.setVisible(true);
-        legalMovesToggle.setVisible(true);        
+        legalMovesToggle.setVisible(true);
     }
     
     public void nextTurn() {
