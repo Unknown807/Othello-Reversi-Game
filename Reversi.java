@@ -171,7 +171,7 @@ public class Reversi
         
         int newSize = Integer.parseInt(result);
         
-        if (newSize % 2 != 0) {
+        if (newSize % 2 != 0 || newSize <= 0) {
             showErrorDialog("The number has to be even");
             return;
         }
