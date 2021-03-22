@@ -58,10 +58,12 @@ public class Board extends JPanel
     public void setBoardSize(int size) {
         boardSize = size;
         boardDiscs = new Disc[size][size];
-        this.layout.setRows(size);
-        this.layout.setColumns(size);
-        // run mainFrame.validate();
+        this.removeAll();
+        layout.setRows(size);
+        layout.setColumns(size);
         populateBoard();
+        this.repaint();
+        this.revalidate();
     }
     
     public void startGame() {
@@ -138,7 +140,7 @@ public class Board extends JPanel
         tempList = checkDirection(r+1, c-1, 1, -1);
         if ( tempList != null ) capturedDiscs.addAll(tempList);
         
-        // If no legal directions of capture have been added, then return null
+        // If no legal directions of capture have been found, then return null
         if (capturedDiscs.size() == 0)
             return null;
 

@@ -127,13 +127,21 @@ public class Reversi
         loadGameItem.addActionListener(e -> loadGame());
     }
     
+    private void showErrorDialog(String msg) {
+        JOptionPane.showMessageDialog(
+            mainFrame, 
+            msg,
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+    }
+    
     private void startNewSession() {
-        int resetDialog = JOptionPane.showConfirmDialog(mainFrame,
+        int result = JOptionPane.showConfirmDialog(mainFrame,
             "Do you want to start a new session?",
             "Board Reset",
             JOptionPane.YES_NO_OPTION);
             
-        if (resetDialog != JOptionPane.YES_OPTION) return;
+        if (result != JOptionPane.YES_OPTION) return;
         
         newGame();
         player1.setScore(0);
@@ -146,6 +154,31 @@ public class Reversi
     }
     
     private void setBoardSize() {
+        String result = (String) JOptionPane.showInputDialog(
+            mainFrame,
+            "Type your new board size (must be even).\nNOTE: this will start a new game",
+            "Board Size Change",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            null,
+            "8");
+            
+        if (result == null) return;
+        if (!result.matches("\\d+")) {
+            showErrorDialog("You have to enter a number");
+            return;
+        }
+        
+        int newSize = Integer.parseInt(result);
+        
+        if (newSize % 2 != 0) {
+            showErrorDialog("The number has to be even");
+            return;
+        }
+        
+        gameBoard.setBoardSize(newSize);
+        newGame();
+        setStatusBar("Changed Board Size", Color.BLACK);
     }
     
     private void saveGame() {
@@ -155,25 +188,19 @@ public class Reversi
     }
     
     private void playGame() {
-        // Adds simple checks to make sure either player's name isn't the default
+        // Adds simple checks to make sure neither player's name isn't the default
         // string or blank
-        boolean validNames = true;
-        String currentPlayer = "1";
         String playerName = player1.getEnteredName();
         
-        if (playerName.isBlank() || playerName.equals("Enter Player Name"))
-            validNames = false;
-            
+        if (playerName.isBlank() || playerName.equals("Enter Player Name")) {
+            showErrorDialog("Player 1's name can't be left blank");
+            return;
+        }
+              
         playerName = player2.getEnteredName();
         
         if (playerName.isBlank() || playerName.equals("Enter Player Name")) {
-            currentPlayer = "2";
-            validNames = false;
-        }
-            
-        if (!validNames) {
-            JOptionPane.showMessageDialog(mainFrame, "Player "+currentPlayer+"'s name can't be left blank",
-                "Error", JOptionPane.ERROR_MESSAGE);
+            showErrorDialog("Player 2's name can't be left blank");
             return;
         }
         
@@ -220,6 +247,7 @@ public class Reversi
     
     private void newGame() {
         turn = true;
+        passedTurns = 0;
         player1.setDiscTotal(0);
         player2.setDiscTotal(0);
         gameBoard.newGame();
