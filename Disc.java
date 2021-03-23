@@ -67,6 +67,10 @@ public class Disc extends JButton implements ActionListener
         }
     }
     
+    public String getData() {
+        return type+" "+legalMove+" "+showLegalMoves;
+    }
+    
     public void makeBlack() {
         this.setIcon(BLACKICON);
         type = "black";
@@ -82,8 +86,8 @@ public class Disc extends JButton implements ActionListener
         type = "empty";
     }
     
-    public void toggleLegalMoves() {
-        showLegalMoves = !showLegalMoves;
+    public void setShowLegalMoves(boolean flag) {
+        showLegalMoves = flag;
     }
     
     public void makeLegal() {

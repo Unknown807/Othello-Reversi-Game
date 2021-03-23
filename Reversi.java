@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
+import javax.swing.JFileChooser;
 
 // AWT imports
 import java.awt.Container;
@@ -18,6 +19,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 
 // Other Imports
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Classic game of Reversi
@@ -30,6 +34,10 @@ public class Reversi
     
     // true is player 1 (Black), false is for player 2 (White). Black starts first
     private boolean turn = true;
+    
+    // Whether legal moves should be shown to both players, this value is communicated
+    // to the individual discs to hide or show their colored border
+    private boolean showLegalMoves = true;
     
     // 0 (able to playmoves), 1 (one player had to pass), 2 (both players passed, end game)
     private int passedTurns = 0;
@@ -120,20 +128,14 @@ public class Reversi
     
     private void createActionListeners() {
         playGameButton.addActionListener(e -> playGame());
-        legalMovesToggle.addActionListener(e -> toggleLegalMoves());
+        legalMovesToggle.addActionListener(e -> setShowLegalMoves());
         newSessionItem.addActionListener(e -> startNewSession());
         setBoardSizeItem.addActionListener(e -> setBoardSize());
         saveGameItem.addActionListener(e -> saveGame());
         loadGameItem.addActionListener(e -> loadGame());
     }
     
-    private void showErrorDialog(String msg) {
-        JOptionPane.showMessageDialog(
-            mainFrame, 
-            msg,
-            "Error",
-            JOptionPane.ERROR_MESSAGE);
-    }
+    // Session Related Methods
     
     private void startNewSession() {
         int result = JOptionPane.showConfirmDialog(mainFrame,
@@ -182,10 +184,45 @@ public class Reversi
     }
     
     private void saveGame() {
+        
+        if (player1.getName().isBlank() || player2.getName().isBlank()) {
+            showErrorDialog("There is currently no game in progress to save");
+            return;
+        }
+        
+        String data = turn+"\n"+
+            passedTurns+"\n"+
+            showLegalMoves+"\n"+
+            player1.getName()+"\n"+
+            player1.getScore()+"\n"+
+            player1.getDiscTotal()+"\n"+
+            player2.getName()+"\n"+
+            player2.getScore()+"\n"+
+            player2.getDiscTotal()+"\n"+
+            gameBoard.getData();
+        
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Choose the Session Save File Name");
+        int result = fileChooser.showSaveDialog(mainFrame);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File saveFile = fileChooser.getSelectedFile();
+            try {
+                FileWriter fileWriter = new FileWriter(saveFile.getAbsolutePath()+".txt");
+                fileWriter.write(data);
+                setStatusBar("Session Successfully Saved!", Color.GREEN);
+                fileWriter.close();              
+            } catch (IOException e) {
+                showErrorDialog("An error occurred when saving the game!");
+            }
+            
+        }
     }
     
     private void loadGame() {
     }
+    
+    // Game Related Methods
     
     private void playGame() {
         // Adds simple checks to make sure neither player's name isn't the default
@@ -196,16 +233,16 @@ public class Reversi
             showErrorDialog("Player 1's name can't be left blank");
             return;
         }
-              
-        playerName = player2.getEnteredName();
         
-        if (playerName.isBlank() || playerName.equals("Enter Player Name")) {
+        String playerName2 = player2.getEnteredName();
+        
+        if (playerName2.isBlank() || playerName2.equals("Enter Player Name")) {
             showErrorDialog("Player 2's name can't be left blank");
             return;
         }
         
-        player1.finalisePlayerName();
-        player2.finalisePlayerName();
+        player1.finalisePlayerName(playerName);
+        player2.finalisePlayerName(playerName2);
         player1.setDiscTotal(2);
         player2.setDiscTotal(2);
         playGameButton.setVisible(false);
@@ -213,12 +250,6 @@ public class Reversi
         setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
         gameBoard.startGame();
         gameBoard.checkAllLegalMoves();
-    }
-    
-    public void toggleLegalMoves() {
-        gameBoard.toggleLegalMoves();
-        String newText = legalMovesToggle.getText().equals("Hide Moves") ? "Show Moves" : "Hide Moves";
-        legalMovesToggle.setText(newText);        
     }
     
     private void endGame() {
@@ -277,6 +308,22 @@ public class Reversi
             gameBoard.checkAllLegalMoves();
         }
     }
+
+    // Other Methods
+    
+    private void showErrorDialog(String msg) {
+        JOptionPane.showMessageDialog(
+            mainFrame, 
+            msg,
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+    }
+    
+    private void setShowLegalMoves() {
+        showLegalMoves = !showLegalMoves;
+        gameBoard.setShowLegalMoves(showLegalMoves);
+        legalMovesToggle.setText( (showLegalMoves) ? "Hide Moves" : "Show Moves");
+    }
     
     public void setStatusBar(String text, Color fg) {
         statusBar.setText(text);
@@ -285,6 +332,6 @@ public class Reversi
     
     public boolean getTurn() {
         return turn;
-    }
+    }    
     
 }

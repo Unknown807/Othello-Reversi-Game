@@ -36,6 +36,18 @@ public class Board extends JPanel
         this.setLayout(layout);
     }
     
+    public String getData() {
+        String data = boardSize+"\n";
+        for (int r=0; r<boardSize; r++) {
+            for (int c=0; c<boardSize; c++) {
+                data += boardDiscs[r][c].getData()+",";
+            }
+            data += "\n";
+        }
+        
+        return data;
+    }
+    
     private void addDisc(Disc newDisc, int row, int column) {
         boardDiscs[row][column] = newDisc;
         this.add(newDisc);
@@ -234,10 +246,10 @@ public class Board extends JPanel
         return total;
     }
     
-    public void toggleLegalMoves() {
+    public void setShowLegalMoves(boolean flag) {
         for (int r=0; r<boardSize; r++) {
             for (int c=0; c<boardSize; c++) {
-                boardDiscs[r][c].toggleLegalMoves();
+                boardDiscs[r][c].setShowLegalMoves(flag);
             }
         }
     }

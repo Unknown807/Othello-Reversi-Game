@@ -16,7 +16,7 @@ import java.awt.Color;
  */
 public class DiscIcon implements Icon
 {
-    private final int SIZE = 32;
+    private final int SIZE = 24;
     private Color ovalColor;
     
     public DiscIcon(Color c) {

@@ -43,7 +43,7 @@ public class PlayerPanel extends JPanel
         playerNameField = new JTextField("Enter Player Name");
         playerName = new JLabel();
         playerName.setFont(playerName.getFont().deriveFont(16f));
-        playerScore = new JLabel("Score (Wins): 0");
+        playerScore = new JLabel("Score: 0");
         playerDiscs = new JLabel("Discs Total: 0");
         
         this.add(playerTitle);
@@ -64,9 +64,7 @@ public class PlayerPanel extends JPanel
         this.setBorder(new EmptyBorder(10,10,10,20));
     }
     
-    public void finalisePlayerName() {   
-        String name = getEnteredName();
-        
+    public void finalisePlayerName(String name) {   
         player.setName(name);
         playerName.setText("Name: "+name);
         
@@ -75,6 +73,7 @@ public class PlayerPanel extends JPanel
     }
     
     public void showPlayerNameField() {
+        player.setName("");
         playerNameField.setText("Enter Player Name");
         
         playerNameField.setVisible(true);
@@ -87,7 +86,7 @@ public class PlayerPanel extends JPanel
     
     public void setScore(int score) {
         player.setScore(score);
-        playerScore.setText("Score (Wins): "+score);
+        playerScore.setText("Score: "+score);
     }
     
     public void setDiscTotal(int total) {
