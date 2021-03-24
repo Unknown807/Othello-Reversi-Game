@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 // AWT imports
 import java.awt.Container;
@@ -19,9 +20,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 
 // Other Imports
+import java.util.Scanner;
+import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 /**
  * Classic game of Reversi
@@ -201,6 +205,10 @@ public class Reversi
             player2.getDiscTotal()+"\n"+
             gameBoard.getData();
         
+        data = data.hashCode()+"\n"+data;
+            
+        System.out.println(data);
+        
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Choose the Session Save File Name");
         int result = fileChooser.showSaveDialog(mainFrame);
@@ -220,6 +228,64 @@ public class Reversi
     }
     
     private void loadGame() {
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Save Files", "txt");
+        fileChooser.setFileFilter(filter);
+        
+        int result = fileChooser.showOpenDialog(mainFrame);
+        if (result != JFileChooser.APPROVE_OPTION) return;
+        
+        
+        try {
+            File saveFile = fileChooser.getSelectedFile();
+            Scanner fileReader = new Scanner(saveFile);
+            
+            ArrayList<String> lines = new ArrayList<>();
+            int fileHashCode = Integer.parseInt(fileReader.nextLine());
+            
+            while (fileReader.hasNextLine()) {
+                lines.add(fileReader.nextLine());
+            }
+            fileReader.close();
+            
+            String fileData = String.join("\n",lines)+"\n";
+            if (fileHashCode != fileData.hashCode())
+                throw new RuntimeException();
+            
+            // Setting game state
+            
+            turn = Boolean.parseBoolean(lines.remove(0));
+            passedTurns = Integer.parseInt(lines.remove(0));
+            showLegalMoves = !Boolean.parseBoolean(lines.remove(0));
+            setShowLegalMoves();
+            playGameButton.setVisible(false);
+            legalMovesToggle.setVisible(false);
+            
+            // Setting player 1
+            
+            player1.finalisePlayerName(lines.remove(0));
+            player1.setScore(Integer.parseInt(lines.remove(0)));
+            player1.setDiscTotal(Integer.parseInt(lines.remove(0)));
+            
+            // Setting player 2
+            
+            player2.finalisePlayerName(lines.remove(0));
+            player2.setScore(Integer.parseInt(lines.remove(0)));
+            player2.setDiscTotal(Integer.parseInt(lines.remove(0)));
+            
+            // Setting board state
+            
+            int boardSize = Integer.parseInt(lines.remove(0));
+            gameBoard.setBoardSize(boardSize);
+            gameBoard.setData(lines);
+            
+            setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
+            
+        } catch (FileNotFoundException e) {
+            showErrorDialog("File not found!");
+        } catch (RuntimeException e) {
+            showErrorDialog("Malformed save file, cannot be loaded");
+        }
     }
     
     // Game Related Methods

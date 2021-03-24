@@ -66,6 +66,7 @@ public class PlayerPanel extends JPanel
     
     public void finalisePlayerName(String name) {   
         player.setName(name);
+        playerNameField.setText(name);
         playerName.setText("Name: "+name);
         
         playerName.setVisible(true);

@@ -48,6 +48,41 @@ public class Board extends JPanel
         return data;
     }
     
+    public void setData(ArrayList<String> discs) {
+        for (int r=0; r<boardSize; r++) {
+            String[] discPropRow = discs.get(r).split(",");
+            for (int c=0; c<boardSize; c++) {
+                Disc currentDisc = boardDiscs[r][c];
+                String[] discProps = discPropRow[c].split(" ");
+                
+                boolean discLegalMove = Boolean.parseBoolean(discProps[1]);
+                boolean discShowLegalMoves = Boolean.parseBoolean(discProps[2]);
+                
+                switch (discProps[0]){
+                    case "black":
+                        currentDisc.makeBlack();
+                        break;
+                    case "white":
+                        currentDisc.makeWhite();
+                        break;
+                    case "empty":
+                        currentDisc.makeEmpty();
+                        break;
+                }
+                
+                currentDisc.setShowLegalMoves(discShowLegalMoves);
+                
+                if (discLegalMove) {
+                    currentDisc.makeLegal();
+                } else {
+                    currentDisc.makeIllegal();
+                }
+            }
+        }
+        
+        currentDiscColor = (controller.getTurn()) ? "black" : "white";
+    }
+    
     private void addDisc(Disc newDisc, int row, int column) {
         boardDiscs[row][column] = newDisc;
         this.add(newDisc);
