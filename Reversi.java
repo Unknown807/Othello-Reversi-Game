@@ -206,8 +206,6 @@ public class Reversi
             gameBoard.getData();
         
         data = data.hashCode()+"\n"+data;
-            
-        System.out.println(data);
         
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Choose the Session Save File Name");
@@ -257,7 +255,6 @@ public class Reversi
             turn = Boolean.parseBoolean(lines.remove(0));
             passedTurns = Integer.parseInt(lines.remove(0));
             showLegalMoves = !Boolean.parseBoolean(lines.remove(0));
-            setShowLegalMoves();
             playGameButton.setVisible(false);
             legalMovesToggle.setVisible(false);
             
@@ -278,6 +275,7 @@ public class Reversi
             int boardSize = Integer.parseInt(lines.remove(0));
             gameBoard.setBoardSize(boardSize);
             gameBoard.setData(lines);
+            setShowLegalMoves();
             
             setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
             

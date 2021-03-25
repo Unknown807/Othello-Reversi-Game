@@ -40,7 +40,9 @@ public class Board extends JPanel
         String data = boardSize+"\n";
         for (int r=0; r<boardSize; r++) {
             for (int c=0; c<boardSize; c++) {
-                data += boardDiscs[r][c].getData()+",";
+                Disc currentDisc = boardDiscs[r][c];
+                data += currentDisc.getType()+" "+
+                    currentDisc.getLegalMove()+",";
             }
             data += "\n";
         }
@@ -56,7 +58,6 @@ public class Board extends JPanel
                 String[] discProps = discPropRow[c].split(" ");
                 
                 boolean discLegalMove = Boolean.parseBoolean(discProps[1]);
-                boolean discShowLegalMoves = Boolean.parseBoolean(discProps[2]);
                 
                 switch (discProps[0]){
                     case "black":
@@ -70,8 +71,6 @@ public class Board extends JPanel
                         break;
                 }
                 
-                currentDisc.setShowLegalMoves(discShowLegalMoves);
-                
                 if (discLegalMove) {
                     currentDisc.makeLegal();
                 } else {
@@ -79,7 +78,7 @@ public class Board extends JPanel
                 }
             }
         }
-        
+
         currentDiscColor = (controller.getTurn()) ? "black" : "white";
     }
     

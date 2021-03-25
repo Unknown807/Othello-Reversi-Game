@@ -67,10 +67,6 @@ public class Disc extends JButton implements ActionListener
         }
     }
     
-    public String getData() {
-        return type+" "+legalMove+" "+showLegalMoves;
-    }
-    
     public void makeBlack() {
         this.setIcon(BLACKICON);
         type = "black";
@@ -104,6 +100,10 @@ public class Disc extends JButton implements ActionListener
     
     public boolean getLegalMove() {
         return legalMove;
+    }
+    
+    public boolean getShowLegalMoves() {
+        return showLegalMoves;
     }
     
     public boolean isEmpty() {
