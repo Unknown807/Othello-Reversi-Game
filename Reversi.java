@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 /**
- * Classic game of Reversi
+ * Responsible for managing the Board and both playerPanel objects as well as which player's
+ * turn it is currently, whether legal moves should be shown and the menu item behaviour
+ * which is setting the board size, new sessions, saving and loading games
  *
  * @author Milovan Gveric
  * @version 15/03/2021
@@ -69,6 +71,12 @@ public class Reversi
         saveGameItem, 
         loadGameItem;
     
+    /**
+     * The frame for the game is created first followed by methods which create the menus and
+     * their items second, then the actual UI components (board, player panels), populates
+     * the board initially with nothing and finally creates the listeners for each of the
+     * menu items
+     */
     public Reversi() {
         mainFrame = new JFrame("Game of Reversi");
         mainContainer = mainFrame.getContentPane();
@@ -84,6 +92,13 @@ public class Reversi
         mainFrame.setVisible(true);
     }
     
+    /**
+     * The menubar only has one Game menu and then four menu items which:
+     * 1) start a new session, overwriting the current game session
+     * 2) set a new board size
+     * 3) save the current game
+     * 4) load another game
+     */
     private void createMenuComponents() {
         menuBar = new JMenuBar();
         gameMenu = new JMenu("Game");
@@ -100,6 +115,10 @@ public class Reversi
         gameMenu.add(loadGameItem);
     }
     
+    /**
+     * Here the game board is created and the player panels with boxlayouts, empty borders
+     * for padding and struts/glue for spacing between widgets that are together
+     */
     private void createComponents() {
         gameBoard = new Board(this);
 
@@ -130,6 +149,9 @@ public class Reversi
         mainContainer.add(statusBar, BorderLayout.SOUTH);
     }
     
+    /**
+     * Creates listeners which point to methods here within the Reversi object
+     */
     private void createActionListeners() {
         playGameButton.addActionListener(e -> playGame());
         legalMovesToggle.addActionListener(e -> setShowLegalMoves());
@@ -141,6 +163,12 @@ public class Reversi
     
     // Session Related Methods
     
+    /**
+     * Before starting a new session the user is asked with a prompt, if they agree
+     * it calls the newGame method and resets player scores and shows the input fields for
+     * new names in each player panel object and finally updates the status bar to show that
+     * a new session has been started
+     */
     private void startNewSession() {
         int result = JOptionPane.showConfirmDialog(mainFrame,
             "Do you want to start a new session?",
@@ -159,6 +187,12 @@ public class Reversi
         player2.showPlayerNameField();
     }
     
+    /**
+     * A prompt is created asking the user what the board size should be set to. By default
+     * it is of size 8x8. If the board size is not a number or even then it gives the user
+     * an error dialog and cancels the operation. When the board size is set a new game is
+     * also started.
+     */
     private void setBoardSize() {
         String result = (String) JOptionPane.showInputDialog(
             mainFrame,
@@ -187,6 +221,25 @@ public class Reversi
         setStatusBar("Changed Board Size", Color.BLACK);
     }
     
+    /**
+     * The game will not save if either user's name is blank because it indicates that there
+     * is no game in progress. For a game in progress it will save:
+     * 1) whose turn it is
+     * 2) how many turns have passed (in case its near endgame)
+     * 3) whether legal moves are to be shown or not
+     * 4) player names
+     * 5) player scores
+     * 6) player disc totals
+     * 7) and the game board's state
+     * 
+     * When this data is combined into a single string separated by new lines, a hashcode is
+     * taken from the string and put at the start in order to read it when loading the game
+     * to make sure none of the data has changed
+     * 
+     * The user is then asked where to save the file, it can be named anything and has a
+     * txt extension and finally the status bar is updated to show it has been saved
+     * successfully
+     */
     private void saveGame() {
         
         if (player1.getName().isBlank() || player2.getName().isBlank()) {
@@ -225,6 +278,19 @@ public class Reversi
         }
     }
     
+    /**
+     * When loading the game the user chooses which save with a file chooser. The first line
+     * is the hashcode of the data when it was saved, an arraylist keeps track of all the
+     * lines after this one. When the file has been read, the hashcode is checked against
+     * a new hashcode of the same data and if they differ then something has changed and an
+     * error dialog is shown and the loading cancels.
+     * 
+     * If the file has not changed then the lines are removed one by one from the arraylist to
+     * set things like whose turn it is, player names, scores, etc. By removing them it returns
+     * the value returned and eventually the arraylist has nothing but the board state data left
+     * (each disc), which is passed into the gameBoard's setData method which sets the new
+     * board state
+     */
     private void loadGame() {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Save Files", "txt");
@@ -288,12 +354,18 @@ public class Reversi
     
     // Game Related Methods
     
+    /**
+     * When the play game button is pressed if the players names are valid then the game is
+     * started (with black starting first), from calling the board's startGame and
+     * checkAllLegalMoves method (to see if players can make any moves). The disc total is
+     * by default 2 as thats how many there are at the start of the game
+     */
     private void playGame() {
         // Adds simple checks to make sure neither player's name isn't the default
         // string or blank
-        String playerName = player1.getEnteredName();
+        String playerName1 = player1.getEnteredName();
         
-        if (playerName.isBlank() || playerName.equals("Enter Player Name")) {
+        if (playerName1.isBlank() || playerName1.equals("Enter Player Name")) {
             showErrorDialog("Player 1's name can't be left blank");
             return;
         }
@@ -305,7 +377,7 @@ public class Reversi
             return;
         }
         
-        player1.finalisePlayerName(playerName);
+        player1.finalisePlayerName(playerName1);
         player2.finalisePlayerName(playerName2);
         player1.setDiscTotal(2);
         player2.setDiscTotal(2);
@@ -316,6 +388,11 @@ public class Reversi
         gameBoard.checkAllLegalMoves();
     }
     
+    /**
+     * The disc totals are checked to see which player wins the game and if both players
+     * have the same number of discs then they are both awarded a point and after the dialog
+     * announcing the results is closed, a new game is started
+     */
     private void endGame() {
         setStatusBar("Neither player can move", Color.RED);
         String msg = "";
@@ -340,6 +417,13 @@ public class Reversi
         setStatusBar("New Game Started", Color.BLACK);
     }
     
+    /**
+     * In order to start a new game the turn is set back to the default of black first, the
+     * number of passed turns is set back to 0 as well as each player's disc totals (which 
+     * will get set to 2 upon calling the board's newGame method, which subsequently populate
+     * the board). and the the play game button and the button to toggle showing legal moves
+     * are shown to let the players decide how/when to play the next game
+     */
     private void newGame() {
         turn = true;
         passedTurns = 0;
@@ -350,6 +434,15 @@ public class Reversi
         legalMovesToggle.setVisible(true);
     }
     
+    /**
+     * When the next turn occurs the number of passed turns is set to 0 because if it was 1
+     * (from one player passing a turn) then if the other player were to pass a turn (while the
+     * other could make a turn) the game may prematurely end because it gets incremented to 2.
+     * 
+     * Both player's disc totals are tallied and set to show the users what they are and the
+     * turn is given to the next player, which is why legal moves are now checked for that
+     * player
+     */
     public void nextTurn() {
         passedTurns = 0;
         player1.setDiscTotal(gameBoard.getWhiteTotal());
@@ -358,6 +451,11 @@ public class Reversi
         gameBoard.checkAllLegalMoves();
     }
     
+    /**
+     * If a player could not make a move then it notifies them and passes the turn to the
+     * other player, if the number of passed turns is at 2 it means neither player could
+     * move and so the game is ended. Otherwise the turn is switched and the game keeps going
+     */
     public void passTurn() {
         String currentPlayer = (turn) ? "Black" : "White";
         setStatusBar(currentPlayer+" passed", Color.RED);
@@ -375,6 +473,9 @@ public class Reversi
 
     // Other Methods
     
+    /**
+     * Error dialogs are used quite frequently so this is a convenience method
+     */
     private void showErrorDialog(String msg) {
         JOptionPane.showMessageDialog(
             mainFrame, 
@@ -383,17 +484,29 @@ public class Reversi
             JOptionPane.ERROR_MESSAGE);
     }
     
+    /**
+     * When toggling whether the legal moves should be shown, it has to call the game board
+     * and set each disc to not show its colored border if its not toggled on
+     */
     private void setShowLegalMoves() {
         showLegalMoves = !showLegalMoves;
         gameBoard.setShowLegalMoves(showLegalMoves);
         legalMovesToggle.setText( (showLegalMoves) ? "Hide Moves" : "Show Moves");
     }
     
+    /**
+     * This method can set the status bar text and its color, used for normal, error and
+     * success messages
+     */
     public void setStatusBar(String text, Color fg) {
         statusBar.setText(text);
         statusBar.setForeground(fg);
     }
     
+    /**
+     * Gets whose turn it currently is, used by 'child' objects to correctly execute certain
+     * methods
+     */
     public boolean getTurn() {
         return turn;
     }    

@@ -2,13 +2,17 @@
  * Player class holds the actual data and communicates it via the PlayerPanel class
  *
  * @author Milovan Gveric
- * @version 22/03/2021
+ * @version 25/03/2021
  */
 public class Player
 {
     private String name = "";
     private int score = 0;
     private int discTotal = 0;
+    
+    /**
+     * Ordinary getters and setters for name, score and discTotal
+     */
     
     public void setName(String name) {
         this.name = name;

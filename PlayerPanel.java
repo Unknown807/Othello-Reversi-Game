@@ -9,13 +9,11 @@ import javax.swing.border.EmptyBorder;
 // AWT Imports
 import java.awt.Dimension;
 
-// Other Imports
-
 /**
  * The PlayerPanel class for holding the UI components that make up a player in the game
  *
  * @author Milovan Gveric
- * @version 16/03/2021
+ * @version 25/03/2021
  */
 public class PlayerPanel extends JPanel
 {
@@ -32,6 +30,14 @@ public class PlayerPanel extends JPanel
         playerScore,
         playerDiscs;
 
+    /**
+     * Components are created here to display each player's scores, total number of captured
+     * discs and their name
+     * 
+     * @param playerColor this sets the large font label to indicate which color the player
+     * is, the color they represent in game is already decided as player 1 is white and player
+     * 2 is black.
+     */
     public PlayerPanel(String playerColor) {
         player = new Player();
         
@@ -64,6 +70,14 @@ public class PlayerPanel extends JPanel
         this.setBorder(new EmptyBorder(10,10,10,20));
     }
     
+    /**
+     * This method is called when each player's entered name in the playerNameField is valid
+     * and this will set their name, and thus show the name label, and hide the playerNameField.
+     * This is also used when loading a game because the current session may not have the
+     * playerNameFields hidden and so it makes sure to load over it.
+     * 
+     * @param name The name of the player to be set
+     */
     public void finalisePlayerName(String name) {   
         player.setName(name);
         playerNameField.setText(name);
@@ -73,6 +87,11 @@ public class PlayerPanel extends JPanel
         playerNameField.setVisible(false);
     }
     
+    /**
+     * This can be seen as the opposite to the finalisePlayerName method as it hides the
+     * name label and shows the playerNameField for users to re-enter their names. This is
+     * used when starting a new session
+     */
     public void showPlayerNameField() {
         player.setName("");
         playerNameField.setText("Enter Player Name");
@@ -81,32 +100,59 @@ public class PlayerPanel extends JPanel
         playerName.setVisible(false);
     }
     
+    /**
+     * This is used to increment the score, it calls the setScore method in order to
+     * both set the label and actual score value of the player to avoid unnecessary code
+     */
     public void incScore() {
         setScore(player.getScore()+1);
     }
     
+    /**
+     * Sets the player's score in the appropriate player object and the playerPanel label
+     * 
+     * @param score the new score
+     */
     public void setScore(int score) {
         player.setScore(score);
         playerScore.setText("Score: "+score);
     }
     
+    /**
+     * Sets the player's total captured discs in the appropriate player object and the
+     * playerPanel label
+     * 
+     * @param total the new total number of captured discs
+     */
     public void setDiscTotal(int total) {
         player.setDiscTotal(total);
         playerDiscs.setText("Discs Total: "+total);
     }
     
+    /**
+     * @return the entered text in the playerNameField for validation
+     */
     public String getEnteredName() {
         return playerNameField.getText();
     }
     
+    /**
+     * @return the appropriate player object's name
+     */
     public String getName() {
         return player.getName();
     }
     
+    /**
+     * @return the appropriate player object's score
+     */
     public int getScore() {
         return player.getScore();
     }
     
+    /**
+     * @return the appropriate player object's total number of captured discs
+     */
     public int getDiscTotal() {
         return player.getDiscTotal();
     }
