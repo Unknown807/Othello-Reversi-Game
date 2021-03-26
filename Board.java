@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * object changes in board state
  *
  * @author Milovan Gveric
- * @version 15/03/2021
+ * @version 26/03/2021
  */
 public class Board extends JPanel
 {
@@ -33,7 +33,7 @@ public class Board extends JPanel
     /**
      * the boardDiscs array stores all the disc objects and utilises a grid layout
      * 
-     * @param controller The controller is the Reversi object which the board communicates
+     * @param controller        The controller is the Reversi object which the board communicates
      * changes to so the game progresses
      */
     public Board(Reversi controller) {
@@ -63,9 +63,9 @@ public class Board extends JPanel
      * Used to add the disc object to both the boardDiscs array and to the gridlayout so
      * its visible to players
      * 
-     * @param newDisc the disc object to be added
-     * @param row its row position
-     * @param column its column position
+     * @param newDisc       the disc object to be added
+     * @param row           its row position
+     * @param column        its column position
      */
     private void addDisc(Disc newDisc, int row, int column) {
         boardDiscs[row][column] = newDisc;
@@ -78,7 +78,7 @@ public class Board extends JPanel
      * lose reference and are garbage collected). After doing this to make sure its visible
      * to the user the board (JPanel) is repainted and revalidated
      * 
-     * @param size the new board size
+     * @param size      the new board size
      */
     public void setBoardSize(int size) {
         boardSize = size;
@@ -160,7 +160,18 @@ public class Board extends JPanel
     }    
     
     /**
+     * Checks each direction clockwise around a disc to see if there are any possible 
+     * directions of capture, if not then the arraylist will have a size of 0, so the method
+     * returns null (as there are no legal moves to capture)
      * 
+     * This method is also used to check for legal moves because if the returned arraylist
+     * is null then it knows there are no legal moves
+     * 
+     * @param r     the row of the current disc
+     * @param c     the column of the current disc
+     * 
+     * @return An arraylist of discs to be captured / indicate legal moves or null to show
+     * that there are no legal moves
      */
     private ArrayList<Disc> getLegalMoves(int r, int c) {
         ArrayList<Disc> capturedDiscs = new ArrayList<>();
@@ -201,6 +212,22 @@ public class Board extends JPanel
         return capturedDiscs;
     }
     
+    /**
+     * Given a position (row and column), along with increments (-1, 0 or +1) this
+     * method will go through all the discs at that position to see which discs of the
+     * opposite color to the current player can be captured. If the increments to the row
+     * or column goes outside of the board's boundary or it comes across an empty disc 
+     * (which means the discs up to that point aren't being flanked) then null is
+     * returned
+     * 
+     * @param r     starting row position
+     * @param c     starting column position
+     * @param rInc  how much to increment/decrement the row at every iteration
+     * @param cInc  how much to increment/decrement the column at every iteration
+     * 
+     * @return An arraylist with all the discs that can be captured in a direction
+     * or null if no discs can be captured in that direction
+     */
     private ArrayList<Disc> checkDirection(int r, int c, int rInc, int cInc) {
         ArrayList<Disc> legalDiscs = new ArrayList<>();
         
@@ -228,6 +255,14 @@ public class Board extends JPanel
         return null;
     }      
     
+    /**
+     * Any time a legal move disc is clicked it communicates it to this method and the board
+     * finds the selected disc to know what the starting row and column positions are to
+     * get the discs to be captured from that position. It then switches to the next players
+     * turn by calling nextTurn in the Reversi object
+     * 
+     * @param selectedDisc      the disc that was clicked during one player's turn
+     */
     public void playMove(Disc selectedDisc) {
         boolean turn = controller.getTurn();
         
@@ -266,6 +301,13 @@ public class Board extends JPanel
     
     // "Utility" Methods
     
+    /**
+     * Goes through all the discs on the board and changes their showLegalMoves field to
+     * indicate whether they should show their colored borders when/if they are a legal move
+     * that can be played on by a player
+     * 
+     * @param flag      true or false to show or hide legal moves where players can place discs
+     */
     public void setShowLegalMoves(boolean flag) {
         for (int r=0; r<boardSize; r++) {
             for (int c=0; c<boardSize; c++) {
@@ -274,6 +316,10 @@ public class Board extends JPanel
         }
     }
     
+    /**
+     * Goes through all discs on the board and makes them empty (neither black or white)
+     * used when starting new games or new sessions
+     */
     private void resetBoard() {
         for (int r=0; r<boardSize; r++) {
             for (int c=0; c<boardSize; c++) {
@@ -282,6 +328,12 @@ public class Board extends JPanel
         }
     }
     
+    /**
+     * Goes through all the discs on the board and marks them as illegal moves, used when
+     * starting new games and new sessions, because by default at the start of the game
+     * the user can't make a move anywhere. This resets the legality from any discs made
+     * legal in the previous game
+     */
     private void resetLegalMoves() {
         for (int r=0; r<boardSize; r++) {
             for (int c=0; c<boardSize; c++) {
@@ -294,6 +346,14 @@ public class Board extends JPanel
         }
     }
     
+    /**
+     * When loading a game the board state needs to be set to how it was, so it goes through
+     * all the disc states from the loaded game and reflects onto the current board. uses
+     * split because each row of discs is comma-delimited and disc properties are separate
+     * with spaces
+     * 
+     * @param discs     the arraylist containing the states of discs from the loaded game
+     */
     public void setData(ArrayList<String> discs) {
         for (int r=0; r<boardSize; r++) {
             String[] discPropRow = discs.get(r).split(",");
@@ -322,10 +382,15 @@ public class Board extends JPanel
                 }
             }
         }
-
-        currentDiscColor = (controller.getTurn()) ? "black" : "white";
     }    
     
+    /**
+     * To save the board state when saving a game, the boardDiscs array is iterated through
+     * and each discs type and whether its legal move is retrieved and systematically
+     * organised and a large string is returned containing all this data
+     * 
+     * @return the board state data to be saved
+     */
     public String getData() {
         String data = boardSize+"\n";
         for (int r=0; r<boardSize; r++) {
@@ -340,6 +405,13 @@ public class Board extends JPanel
         return data;
     }
     
+    /**
+     * Gets the total number of discs that have been captured by the player whose color
+     * equals the currentDiscColor. Used to get both white and black captures via other
+     * methods
+     * 
+     * @return the count of captured discs for a player
+     */
     private int getTotalDiscs() {
         int total = 0;
         
@@ -353,18 +425,27 @@ public class Board extends JPanel
         return total;
     }    
     
-    public void setStatusBar(String text, Color fg) {
-        controller.setStatusBar(text, fg);
-    }
-    
+    /**
+     * @return the count of captured discs for the black player
+     */
     public int getBlackTotal() {
         currentDiscColor = "black";
         return getTotalDiscs();
     }
     
+    /**
+     * @return the count of captured discs for the white player
+     */
     public int getWhiteTotal() {
         currentDiscColor = "white";
         return getTotalDiscs();
+    }    
+    
+    /**
+     * Used to communicate useful messages to the Reversi object's status bar
+     */
+    public void setStatusBar(String text, Color fg) {
+        controller.setStatusBar(text, fg);
     }
 
 }

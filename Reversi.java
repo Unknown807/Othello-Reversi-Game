@@ -33,7 +33,7 @@ import java.io.FileNotFoundException;
  * which is setting the board size, new sessions, saving and loading games
  *
  * @author Milovan Gveric
- * @version 15/03/2021
+ * @version 26/03/2021
  */
 public class Reversi
 {
@@ -342,6 +342,7 @@ public class Reversi
             gameBoard.setBoardSize(boardSize);
             gameBoard.setData(lines);
             setShowLegalMoves();
+            gameBoard.checkAllLegalMoves();
             
             setStatusBar("It's "+((turn) ? "Black" : "White")+"'s Turn", Color.BLACK);
             
@@ -475,6 +476,8 @@ public class Reversi
     
     /**
      * Error dialogs are used quite frequently so this is a convenience method
+     * 
+     * @param msg       The error message to be shown
      */
     private void showErrorDialog(String msg) {
         JOptionPane.showMessageDialog(
@@ -497,6 +500,9 @@ public class Reversi
     /**
      * This method can set the status bar text and its color, used for normal, error and
      * success messages
+     * 
+     * @param text      the text to give the status bar
+     * @param fg        the color of the status bar text
      */
     public void setStatusBar(String text, Color fg) {
         statusBar.setText(text);
@@ -504,8 +510,8 @@ public class Reversi
     }
     
     /**
-     * Gets whose turn it currently is, used by 'child' objects to correctly execute certain
-     * methods
+     * @@return whose turn it currently is, used by 'child' objects to correctly 
+     * execute certain methods
      */
     public boolean getTurn() {
         return turn;

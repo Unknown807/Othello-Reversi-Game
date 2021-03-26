@@ -13,7 +13,7 @@ import java.awt.Dimension;
  * The PlayerPanel class for holding the UI components that make up a player in the game
  *
  * @author Milovan Gveric
- * @version 25/03/2021
+ * @version 26/03/2021
  */
 public class PlayerPanel extends JPanel
 {
@@ -34,9 +34,9 @@ public class PlayerPanel extends JPanel
      * Components are created here to display each player's scores, total number of captured
      * discs and their name
      * 
-     * @param playerColor this sets the large font label to indicate which color the player
-     * is, the color they represent in game is already decided as player 1 is white and player
-     * 2 is black.
+     * @param playerColor       this sets the large font label to indicate 
+     * which color the player is, the color they represent in game is already decided 
+     * as player 1 is white and player 2 is black
      */
     public PlayerPanel(String playerColor) {
         player = new Player();
@@ -76,7 +76,7 @@ public class PlayerPanel extends JPanel
      * This is also used when loading a game because the current session may not have the
      * playerNameFields hidden and so it makes sure to load over it.
      * 
-     * @param name The name of the player to be set
+     * @param name      The name of the player to be set
      */
     public void finalisePlayerName(String name) {   
         player.setName(name);
@@ -111,7 +111,7 @@ public class PlayerPanel extends JPanel
     /**
      * Sets the player's score in the appropriate player object and the playerPanel label
      * 
-     * @param score the new score
+     * @param score     the new score
      */
     public void setScore(int score) {
         player.setScore(score);
@@ -122,7 +122,7 @@ public class PlayerPanel extends JPanel
      * Sets the player's total captured discs in the appropriate player object and the
      * playerPanel label
      * 
-     * @param total the new total number of captured discs
+     * @param total     the new total number of captured discs
      */
     public void setDiscTotal(int total) {
         player.setDiscTotal(total);

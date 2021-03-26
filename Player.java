@@ -2,7 +2,7 @@
  * Player class holds the actual data and communicates it via the PlayerPanel class
  *
  * @author Milovan Gveric
- * @version 25/03/2021
+ * @version 26/03/2021
  */
 public class Player
 {
