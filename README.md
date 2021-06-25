@@ -4,7 +4,7 @@ Made in BlueJ
 
 ## Description
 
-A game of Reversi (specifically the othello variant) made in Java Swing, it plays like this https://www.webgamesonline.com/reversi/index.php.
+A game of Reversi (specifically the othello variant) made in Java Swing, it plays like <a href="https://www.webgamesonline.com/reversi/index.php.">this</a>.
 The goal is to hold the higher number of pieces by the end of the game (when neither player can make a legal move). This
 program lets you play the game as many times as you want, start new sessions whenever, change the board size and save
 and load games.
